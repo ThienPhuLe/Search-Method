@@ -241,7 +241,7 @@ public class CoordinateCity {
         return Math.sqrt(dx * dx + dy * dy);
     }
 
-    // A* Search using calculateDistance as the path cost function and Euclidean distance as the heuristic
+
     // A* Search using calculateDistance as the path cost function and Euclidean distance as the heuristic
     public void aStarSearch(String startCity, String endCity) {
         City start = cities.get(startCity);
@@ -281,10 +281,7 @@ public class CoordinateCity {
 
                 if (!pathCosts.containsKey(neighbor) || newCost < pathCosts.get(neighbor)) {
                     pathCosts.put(neighbor, newCost);
-
-                    // No need to calculate priority here
                     priorityQueue.add(neighbor);
-
                     // Update the parent map
                     parentMap.put(neighbor, currentCity);
                 }
