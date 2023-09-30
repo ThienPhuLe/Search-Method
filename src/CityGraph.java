@@ -40,20 +40,27 @@ public class CityGraph {
 
     // Function to perform depth-first search (DFS).
     public void depthFirstSearch(String startCity, String endCity) {
+        long startTime = System.currentTimeMillis();
         Set<String> visited = new HashSet<>();
         List<String> path = new ArrayList<>();
         path.add(startCity);
+        double pathDistance = 0;
 
-        boolean foundPath = dfsHelper(startCity, endCity, visited, path);
+        boolean foundPath = dfsHelper(startCity, endCity, visited, path,pathDistance);
+        long endTime = System.currentTimeMillis();
+        long executionTime = endTime - startTime;
+        System.out.println("Depth-First Search Execution Time: " + executionTime + " milliseconds");
 
         if (!foundPath) {
             System.out.println("No path found from " + startCity + " to " + endCity);
         }
     }
 
-    private boolean dfsHelper(String currentCity, String endCity, Set<String> visited, List<String> path) {
+    private boolean dfsHelper(String currentCity, String endCity, Set<String> visited, List<String> path, double pathDistance) {
+
         if (currentCity.equals(endCity)) {
             System.out.println("Path from " + path.get(0) + " to " + endCity + ": " + String.join(" -> ", path));
+            System.out.println("Path Distance: " + pathDistance);
             return true;
         }
 
@@ -63,7 +70,9 @@ public class CityGraph {
             for (String neighbor : adjacencyList.get(currentCity)) {
                 if (!visited.contains(neighbor)) {
                     path.add(neighbor);
-                    if (dfsHelper(neighbor, endCity, visited, path)) {
+                    double edgeDistance = 1.00;
+                    pathDistance += edgeDistance;
+                    if (dfsHelper(neighbor, endCity, visited, path, pathDistance)) {
                         return true; // Path found, stop searching
                     }
                     path.remove(path.size() - 1); // Backtrack
@@ -79,12 +88,16 @@ public class CityGraph {
         Queue<String> queue = new LinkedList<>();
         Map<String, String> parentMap = new HashMap<>();
         Set<String> visited = new HashSet<>();
+        Map<String, Double> pathDistanceMap = new HashMap<>();
+        long startTime = System.currentTimeMillis();
 
         queue.add(startCity);
         visited.add(startCity);
+        pathDistanceMap.put(startCity, 0.0);
 
         while (!queue.isEmpty()) {
             String currentCity = queue.poll();
+            double currentPathDistance = pathDistanceMap.get(currentCity);
 
             if (currentCity.equals(endCity)) {
                 // Reconstruct and print the path from endCity to startCity
@@ -96,7 +109,12 @@ public class CityGraph {
                     parent = parentMap.get(parent);
                 }
                 Collections.reverse(path);
+                double pathDistance = pathDistanceMap.get(endCity);
                 System.out.println("Path from " + startCity + " to " + endCity + ": " + String.join(" -> ", path));
+                System.out.println("Path Distance: " + pathDistance);
+                long endTime = System.currentTimeMillis();
+                long executionTime = endTime - startTime;
+                System.out.println("Breadth-First Search Execution Time: " + executionTime + " milliseconds");
                 return;
             }
 
@@ -106,6 +124,9 @@ public class CityGraph {
                         queue.add(neighbor);
                         visited.add(neighbor);
                         parentMap.put(neighbor, currentCity);
+                        double edgeDistance = 1;
+                        double neighborPathDistance = currentPathDistance + edgeDistance; // Calculate path distance to neighbor
+                        pathDistanceMap.put(neighbor, neighborPathDistance);
                     }
                 }
             }
@@ -116,27 +137,32 @@ public class CityGraph {
 
     public void iterativeDeepeningDFS(String startCity, String endCity) {
         int maxDepth = 0;
+        long startTime = System.currentTimeMillis();
         while (true) {
             Set<String> visited = new HashSet<>();
             List<String> path = new ArrayList<>();
             path.add(startCity);
+            double pathDistance = 0;
 
-            boolean found = iddfsHelper(startCity, endCity, visited, path, maxDepth);
+            boolean found = iddfsHelper(startCity, endCity, visited, path, maxDepth, pathDistance);
 
             if (found) {
                 System.out.println("Path from " + startCity + " to " + endCity + ": " + String.join(" -> ", path));
-                return; // Path found, exit the search
+                System.out.println("Path Distance: " + pathDistance);
+                long endTime = System.currentTimeMillis();
+                long executionTime = endTime - startTime;
+                System.out.println("Iterative Deepening DFS Execution Time: " + executionTime + " milliseconds");
+                return;
             }
 
             maxDepth++;
             if (maxDepth >= adjacencyList.size()) {
                 System.out.println("No path found from " + startCity + " to " + endCity);
-                return; // No path found within the entire graph
             }
         }
     }
 
-    private boolean iddfsHelper(String currentCity, String endCity, Set<String> visited, List<String> path, int maxDepth) {
+    private boolean iddfsHelper(String currentCity, String endCity, Set<String> visited, List<String> path, int maxDepth, double pathDistance) {
         if (currentCity.equals(endCity)) {
             return true; // Path found
         }
@@ -151,7 +177,9 @@ public class CityGraph {
             for (String neighbor : adjacencyList.get(currentCity)) {
                 if (!visited.contains(neighbor)) {
                     path.add(neighbor);
-                    if (iddfsHelper(neighbor, endCity, visited, path, maxDepth)) {
+                    double edgeDistance = 1;
+                    pathDistance += edgeDistance;
+                    if (iddfsHelper(neighbor, endCity, visited, path, maxDepth, pathDistance)) {
                         return true; // Path found
                     }
                     path.remove(path.size() - 1); // Backtrack
@@ -165,6 +193,7 @@ public class CityGraph {
 
     // Function to perform Best-First Search (BFS) with a heuristic.
     public void bestFirstSearch(String startCity, String endCity) {
+        long startTime = System.currentTimeMillis();
         PriorityQueue<CityNode> priorityQueue = new PriorityQueue<>(new Comparator<CityNode>() {
             @Override
             public int compare(CityNode node1, CityNode node2) {
@@ -174,15 +203,19 @@ public class CityGraph {
         });
 
         Map<String, String> parentMap = new HashMap<>();
+        Map<String, Double> pathDistanceMap = new HashMap<>();
         Set<String> visited = new HashSet<>();
+
 
         // Create a starting node with a heuristic value (distance estimate).
         CityNode startNode = new CityNode(startCity, 0);
         priorityQueue.add(startNode);
         visited.add(startCity);
+        pathDistanceMap.put(startCity, 0.0);
 
         while (!priorityQueue.isEmpty()) {
             CityNode currentNode = priorityQueue.poll();
+            double currentPathDistance = pathDistanceMap.get(currentNode.city);
 
             // Check if we have reached the destination city.
             if (currentNode.city.equals(endCity)) {
@@ -195,8 +228,12 @@ public class CityGraph {
                     parent = parentMap.get(parent);
                 }
                 Collections.reverse(path);
+                double pathDistance = pathDistanceMap.get(endCity);
                 System.out.println("Path from " + startCity + " to " + endCity + ": " + String.join(" -> ", path));
-                return;
+                System.out.println("Path Distance: " + pathDistance);
+                long endTime = System.currentTimeMillis();
+                long executionTime = endTime - startTime;
+                System.out.println("Best-First Search Execution Time: " + executionTime + " milliseconds");
             }
 
             // Explore neighbors of the current city.
@@ -208,6 +245,10 @@ public class CityGraph {
                         priorityQueue.add(neighborNode);
                         visited.add(neighbor);
                         parentMap.put(neighbor, currentNode.city); // Store parent for path reconstruction.
+                        double edgeDistance = 1;
+                        double neighborPathDistance = currentPathDistance + edgeDistance;
+                        pathDistanceMap.put(neighbor, neighborPathDistance);
+
                     }
                 }
             }
@@ -233,6 +274,7 @@ public class CityGraph {
 
 
     public void aStarSearch(String startCity, String endCity) {
+        long startTime = System.currentTimeMillis();
         PriorityQueue<CityCost> priorityQueue = new PriorityQueue<>(new Comparator<CityCost>() {
             @Override
             public int compare(CityCost city1, CityCost city2) {
@@ -247,7 +289,6 @@ public class CityGraph {
         Map<String, String> parentMap = new HashMap<>();
         Set<String> visited = new HashSet<>();
 
-        // Create a starting node with a heuristic value (distance estimate) and path cost.
         CityCost startNode = new CityCost(startCity, 0);
         priorityQueue.add(startNode);
         costSoFar.put(startCity, 0.0);
@@ -266,8 +307,13 @@ public class CityGraph {
                     path.add(parent);
                     parent = parentMap.get(parent);
                 }
+                double pathDistance = costSoFar.get(endCity); // Get path distance
+                long endTime = System.currentTimeMillis(); // Record end time
+                long executionTime = endTime - startTime;
                 Collections.reverse(path);
                 System.out.println("Path from " + startCity + " to " + endCity + ": " + String.join(" -> ", path));
+                System.out.println("Path Distance: " + pathDistance);
+                System.out.println("Execution Time: " + executionTime + " milliseconds");
                 return;
             }
 
@@ -303,17 +349,23 @@ public class CityGraph {
     public void bruteForceSearch(String startCity, String endCity) {
         List<String> path = new ArrayList<>();
         path.add(startCity);
+        double pathDistance = 0.00;
+        long startTime = System.currentTimeMillis();
 
-        boolean foundPath = bruteForceHelper(startCity, endCity, path);
+        boolean foundPath = bruteForceHelper(startCity, endCity, path, pathDistance);
 
         if (foundPath) {
             System.out.println("Path from " + startCity + " to " + endCity + ": " + String.join(" -> ", path));
+            System.out.println("Path Distance: " + pathDistance);
+            long endTime = System.currentTimeMillis();
+            long executionTime = endTime - startTime;
+            System.out.println("Brute-Force Search Execution Time: " + executionTime + " milliseconds");
         } else {
             System.out.println("No path found from " + startCity + " to " + endCity);
         }
     }
 
-    private boolean bruteForceHelper(String currentCity, String endCity, List<String> path) {
+    private boolean bruteForceHelper(String currentCity, String endCity, List<String> path, double pathDistance) {
         if (currentCity.equals(endCity)) {
             return true; // Path found
         }
@@ -322,10 +374,13 @@ public class CityGraph {
             for (String neighbor : adjacencyList.get(currentCity)) {
                 if (!path.contains(neighbor)) {
                     path.add(neighbor);
-                    if (bruteForceHelper(neighbor, endCity, path)) {
+                    double edgeDistance = 1;
+                    pathDistance += edgeDistance;
+                    if (bruteForceHelper(neighbor, endCity, path, pathDistance)) {
                         return true; // Path found
                     }
                     path.remove(path.size() - 1); // Backtrack
+                    pathDistance -= edgeDistance;
                 }
             }
         }

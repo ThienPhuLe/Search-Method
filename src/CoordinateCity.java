@@ -89,6 +89,7 @@ public class CoordinateCity {
         City start = cities.get(startCity);
         City end = cities.get(endCity);
 
+        long startTime = System.currentTimeMillis();
 
         Stack<City> stack = new Stack<>();
         stack.push(start);
@@ -99,10 +100,15 @@ public class CoordinateCity {
 
         while (!stack.isEmpty()) {
             City currentCity = stack.pop();
-            System.out.println("Visiting: " + currentCity.name);
 
             if (currentCity == end) {
+                long endTime = System.currentTimeMillis();
+                double distance = calculateDistance(start, end);
+                long elapsedTime = endTime - startTime;
+
                 printPath(parentMap, start, end);
+                System.out.println("Distance: " + distance + " kilometers");
+                System.out.println("Time taken: " + elapsedTime + " milliseconds");
                 return;
             }
 
@@ -117,12 +123,12 @@ public class CoordinateCity {
 
     }
 
-
     // Breadth-first search
     public void bfs(String startCity, String endCity) {
         City start = cities.get(startCity);
         City end = cities.get(endCity);
 
+        long startTime = System.currentTimeMillis();
 
         Queue<City> queue = new LinkedList<>();
         queue.add(start);
@@ -133,9 +139,14 @@ public class CoordinateCity {
 
         while (!queue.isEmpty()) {
             City currentCity = queue.poll();
-            System.out.println("Visiting: " + currentCity.name);
+
             if (currentCity == end) {
+                long endTime = System.currentTimeMillis();
+                double distance = calculateDistance(start, end);
+                long elapsedTime = endTime - startTime;
                 printPath(parentMap, start, end);
+                System.out.println("Distance: " + distance + " kilometers");
+                System.out.println("Time taken: " + elapsedTime + " milliseconds");
                 return;
             }
 
@@ -155,6 +166,8 @@ public class CoordinateCity {
         City start = cities.get(startCity);
         City end = cities.get(endCity);
 
+        long startTime = System.currentTimeMillis();
+
 
         int maxDepth = 100; // Set a maximum depth limit, adjust as needed
 
@@ -162,7 +175,12 @@ public class CoordinateCity {
             Map<City, Boolean> visited = new HashMap<>();
             Map<City, City> parentMap = new HashMap<>();
             if (idDfsRecursive(start, end, depthLimit, visited, parentMap)) {
+                long endTime = System.currentTimeMillis();
+                double distance = calculateDistance(start, end);
+                long elapsedTime = endTime - startTime;
                 printPath(parentMap, start, end);
+                System.out.println("Distance: " + distance + " kilometers");
+                System.out.println("Time taken: " + elapsedTime + " milliseconds");
                 return;
             }
         }
@@ -184,7 +202,6 @@ public class CoordinateCity {
             if (!visited.containsKey(neighbor)) {
                 parentMap.put(neighbor, currentCity);
                 if (idDfsRecursive(neighbor, endCity, depthLimit - 1, visited, parentMap)) {
-                    System.out.println("Visiting: " + currentCity.name);
                     return true;
                 }
             }
@@ -197,6 +214,7 @@ public class CoordinateCity {
     public void bestFirstSearch(String startCity, String endCity) {
         City start = cities.get(startCity);
         City end = cities.get(endCity);
+        long startTime = System.currentTimeMillis();
 
 
         PriorityQueue<City> priorityQueue = new PriorityQueue<>(new Comparator<City>() {
@@ -217,9 +235,13 @@ public class CoordinateCity {
 
         while (!priorityQueue.isEmpty()) {
             City currentCity = priorityQueue.poll();
-            System.out.println("Visiting: " + currentCity.name);
             if (currentCity == end) {
+                long endTime = System.currentTimeMillis();
+                double distance = calculateDistance(start, end);
+                long elapsedTime = endTime - startTime;
                 printPath(parentMap, start, end);
+                System.out.println("Distance: " + distance + " kilometers");
+                System.out.println("Time taken: " + elapsedTime + " milliseconds");
                 return;
             }
 
@@ -247,6 +269,8 @@ public class CoordinateCity {
         City start = cities.get(startCity);
         City end = cities.get(endCity);
 
+        long startTime = System.currentTimeMillis();
+
         if (start == null || end == null) {
             return;
         }
@@ -269,10 +293,14 @@ public class CoordinateCity {
 
         while (!priorityQueue.isEmpty()) {
             City currentCity = priorityQueue.poll();
-            System.out.println("Visiting: " + currentCity.name);
 
             if (currentCity == end) {
+                long endTime = System.currentTimeMillis();
+                double distance = calculateDistance(start, end);
+                long elapsedTime = endTime - startTime;
                 printPath(parentMap, start, end);
+                System.out.println("Distance: " + distance + " kilometers");
+                System.out.println("Time taken: " + elapsedTime + " milliseconds");
                 return;
             }
 
@@ -294,13 +322,20 @@ public class CoordinateCity {
         City start = cities.get(startCity);
         City end = cities.get(endCity);
 
+        long startTime = System.currentTimeMillis();
+
         List<String> path = new ArrayList<>();
         path.add(startCity);
 
         boolean foundPath = bruteForceHelper(start, end, path);
 
         if (foundPath) {
+            long endTime = System.currentTimeMillis();
+            double distance = calculateDistance(start, end);
+            long elapsedTime = endTime - startTime;
             System.out.println("Path from " + startCity + " to " + endCity + ": " + String.join(" -> ", path));
+            System.out.println("Distance: " + distance + " kilometers");
+            System.out.println("Time taken: " + elapsedTime + " milliseconds");
         } else {
             System.out.println("No path found from " + startCity + " to " + endCity);
         }
@@ -315,7 +350,6 @@ public class CoordinateCity {
             if (!path.contains(neighbor.name)) {
                 path.add(neighbor.name);
                 if (bruteForceHelper(neighbor, endCity, path)) {
-                    System.out.println("Visiting: " + currentCity.name);
                     return true; // Path found
                 }
                 path.remove(path.size() - 1); // Backtrack
